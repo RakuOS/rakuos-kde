@@ -102,7 +102,6 @@ jobs:
           release_name: "RakuOS KDE ISO Build #${{ github.run_number }}"
           draft: false
           prerelease: false
-          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
