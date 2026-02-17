@@ -36,6 +36,7 @@ jobs:
         uses: ublue-os/titanoboa@main
         with:
           image-ref: ghcr.io/rakuos/rakuos-kde:latest
+          container-image: ghcr.io/rakuos/rakuos-kde:latest
           flatpaks-list: ${{ github.workspace }}/config/flatpaks.list
           hook-post-rootfs: ${{ github.workspace }}/config/configure-iso.sh
           compression: squashfs
