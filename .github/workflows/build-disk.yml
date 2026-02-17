@@ -118,11 +118,23 @@ jobs:
           network_id: ${{ secrets.ZEROTIER_NETWORK_ID }}
           auth_token: ${{ secrets.ZEROTIER_CENTRAL_TOKEN }}
 
+      # ⏳ Wait for ZeroTier interface and test connectivity
+      - name: Wait for ZeroTier IP
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "Waiting for ZeroTier interface..."
+          sleep 10  # give interface time to initialize
+          echo "ZeroTier IPs:"
+          ip addr show
+          echo "Testing connectivity to homelab..."
+          ping -c 3 172.30.215.53
+
       # 🚀 Upload ISO + checksum via SFTP
-      - name: SFTP upload
+      - name: SFTP upload via ZeroTier
+        if: github.event_name != 'pull_request'
         uses: Dylan700/sftp-upload-action@latest
         with:
-          server: ${{secrets.SFTP_HOST}}
+          server: 172.30.215.53        # <-- ZeroTier IP of your homelab
           username: ${{secrets.SFTP_USERNAME}}
           password: ${{secrets.SFTP_PASSWORD}}
           port: 22
