@@ -38,7 +38,6 @@ jobs:
           image-ref: ghcr.io/rakuos/rakuos-kde:latest
           flatpaks-list: ${{ github.workspace }}/config/flatpaks.list
           hook-post-rootfs: ${{ github.workspace }}/config/configure-iso.sh
-          hook-pre-initramfs: ${{ github.workspace }}/config/pre_initramfs.sh
           compression: squashfs
           builder-distro: fedora
 
