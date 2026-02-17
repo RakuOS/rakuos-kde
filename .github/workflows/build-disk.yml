@@ -119,13 +119,14 @@ jobs:
           token: ${{ secrets.ZEROTIER_TOKEN }}
 
       # 🚀 Upload ISO + checksum via SFTP
-      - name: Upload ISO and checksum via SFTP
-        if: github.event_name != 'pull_request'
-        run: |
-          cd ${{ steps.build.outputs.output-directory }}
-          sftp -o StrictHostKeyChecking=no ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }} <<EOF
-            put rakuos-kde-${{ inputs.platform }}.iso ${{ secrets.SFTP_TARGET_DIR }}/rakuos-kde-${{ inputs.platform }}.iso
-            put rakuos-kde-${{ inputs.platform }}.iso.sha256 ${{ secrets.SFTP_TARGET_DIR }}/rakuos-kde-${{ inputs.platform }}.iso.sha256
-            bye
-          EOF
-        shell: bash
+      - name: SFTP upload
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{secrets.SFTP_HOST}}
+          username: ${{secrets.SFTP_USERNAME}}
+          password: ${{secrets.SFTP_PASSWORD}}
+          port: 22
+          uploads: |
+            ${{ steps.build.outputs.output-directory }}/rakuos-kde-${{ inputs.platform }}.iso => ${{secrets.SFTP_TARGET}}/
+            ${{ steps.build.outputs.output-directory }}/rakuos-kde-${{ inputs.platform }}.iso.sha256 => ${{secrets.SFTP_TARGET}}/
+          delete: 'true'
