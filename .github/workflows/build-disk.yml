@@ -141,4 +141,3 @@ jobs:
           uploads: |
             ${{ steps.build.outputs.output-directory }}/rakuos-kde-${{ inputs.platform }}.iso => ${{secrets.SFTP_TARGET}}/
             ${{ steps.build.outputs.output-directory }}/rakuos-kde-${{ inputs.platform }}.iso.sha256 => ${{secrets.SFTP_TARGET}}/
-          delete: 'true'
