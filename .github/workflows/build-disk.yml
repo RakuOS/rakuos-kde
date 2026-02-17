@@ -48,14 +48,18 @@ jobs:
 
       - name: Rename ISO + Generate SHA256
         run: |
-          mkdir -p output
+          ISO_PATH="${{ steps.build.outputs.iso-dest }}"
 
           NEW_ISO="rakuos-kde-$(date +%Y%m%d).iso"
-          mv ${{ steps.build.outputs.iso-dest }} "$NEW_ISO"
-          cd output
+
+          mv "$ISO_PATH" "$NEW_ISO"
           sha256sum "$NEW_ISO" > "$NEW_ISO.sha256"
 
+          mkdir -p output
+          mv "$NEW_ISO" "$NEW_ISO.sha256" output/
+
           echo "NEW_ISO_NAME=$NEW_ISO" >> $GITHUB_ENV
+          echo "OUTPUT_DIR=$(pwd)/output" >> $GITHUB_ENV
 
       # 🌐 ZeroTier
       - name: Join ZeroTier Network
@@ -82,7 +86,7 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           port: 22
           uploads: |
-            output/ => ${{ secrets.SFTP_TARGET }}/
+            ${{ env.OUTPUT_DIR }}/ => ${{ secrets.SFTP_TARGET }}/
           ignore: |
             manifest-anaconda-iso.json
             bootiso
