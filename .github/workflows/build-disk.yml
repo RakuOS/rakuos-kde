@@ -48,10 +48,11 @@ jobs:
 
       - name: Rename ISO + Generate SHA256
         run: |
-          cd ${{ steps.build.outputs.iso-dest }}
+          mkdir -p output
 
           NEW_ISO="rakuos-kde-$(date +%Y%m%d).iso"
-          mv *.iso "$NEW_ISO"
+          mv ${{ steps.build.outputs.iso-dest }} "$NEW_ISO"
+          cd output
           sha256sum "$NEW_ISO" > "$NEW_ISO.sha256"
 
           echo "NEW_ISO_NAME=$NEW_ISO" >> $GITHUB_ENV
@@ -81,7 +82,7 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           port: 22
           uploads: |
-            ${{ steps.build.outputs.iso-dest }}/ => ${{ secrets.SFTP_TARGET }}/
+            output/ => ${{ secrets.SFTP_TARGET }}/
           ignore: |
             manifest-anaconda-iso.json
             bootiso
