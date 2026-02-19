@@ -12,10 +12,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - './disk_config/disk.toml'
-      - './disk_config/iso.toml'
-      - './.github/workflows/build-disk.yml'
 
 env:
   IMAGE_NAME: ${{ github.event.repository.name }}
@@ -157,8 +153,21 @@ jobs:
           uploads: |
             ${{ steps.build.outputs.iso_path }}/ => ${{ secrets.SFTP_TARGET }}/
           ignore: |
+            .git
+            .github
+            build_files
+            config
+            disk_config
+            flatpak.OhV
+            .gitignore
             manifest-anaconda-iso.json
             bootiso
+            LICENSE
+            README.md
+            artifacthub-repo.yml
+            cosign.pub
+            *-CHECKSUM
+            Containerfile
 
       # 🔄 Update latest symlink + delete previous ISO + SHA256
       - name: Cleanup old ISO + update latest symlink
