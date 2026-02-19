@@ -77,7 +77,7 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}
           image_repo: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
           variant: "Kinoite"                         # change per DE image
-          version: ${{ env.DEFAULT_TAG }}
+          version: 43
           image_tag: ${{ env.DEFAULT_TAG }}
           iso_name: "${{ env.IMAGE_NAME }}-${{ env.DEFAULT_TAG }}-${{ inputs.platform }}.iso"
           enable_cache_dnf: "false"
