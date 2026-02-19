@@ -112,7 +112,7 @@ jobs:
       - name: Generate SHA256 checksum
         if: github.event_name != 'pull_request'
         run: |
-          cd /github/workspace
+          cd ${{ steps.build.outputs.iso_path }}
           sha256sum "$NEW_ISO_NAME" > "$NEW_ISO_NAME.sha256"
         shell: bash
 
