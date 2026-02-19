@@ -90,7 +90,7 @@ jobs:
           enable_cache_dnf: "false"
           enable_cache_skopeo: "false"
           flatpak_remote_refs_dir: "./installer/flatpaks/${{ inputs.platform }}" # your Flatpak list folder
-          enable_flatpak_dependencies: "false"
+          enable_flatpak_dependencies: "true"
           extra_boot_params: ""                      # optional kernel/boot parameters
           additional_templates: "/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl"
           repos: '/etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
@@ -99,7 +99,7 @@ jobs:
       - name: Rename ISO
         if: github.event_name != 'pull_request'
         run: |
-          cd /github/workspace
+          cd ${{ steps.build.outputs.iso_path }}
           BUILD_DATE=$(date -u +%Y.%m.%d)
           ISO_PATH=$(find . -type f -name "*.iso" | head -n 1)
           echo "Found ISO at $ISO_PATH"
@@ -122,8 +122,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: |
-            /github/workspace/${{ env.NEW_ISO_NAME }}
-            /github/workspace/${{ env.NEW_ISO_NAME }}.sha256
+            ${{ steps.build.outputs.iso_path }}/${{ env.NEW_ISO_NAME }}
+            ${{ steps.build.outputs.iso_path }}/${{ env.NEW_ISO_NAME }}.sha256
           if-no-files-found: error
           retention-days: 7
           compression-level: 0
@@ -155,7 +155,7 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           port: 22
           uploads: |
-            /github/workspace/ => ${{ secrets.SFTP_TARGET }}/
+            ${{ steps.build.outputs.iso_path }}/ => ${{ secrets.SFTP_TARGET }}/
           ignore: |
             manifest-anaconda-iso.json
             bootiso
