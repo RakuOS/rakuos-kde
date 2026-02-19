@@ -21,7 +21,6 @@ env:
   IMAGE_NAME: ${{ github.event.repository.name }}
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   DEFAULT_TAG: "latest"
-  BIB_IMAGE: "quay.io/centos-bootc/bootc-image-builder:latest"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -69,30 +68,36 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build disk images
+      # 🔥 Build ISO using build-container-installer
+      - name: Build ISO
         id: build
-        uses: osbuild/bootc-image-builder-action@main
+        uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24
         with:
-          builder-image: ${{ env.BIB_IMAGE }}
-          config-file: ${{ matrix.disk-type == 'anaconda-iso' && './disk_config/iso.toml' || './disk_config/disk.toml' }}
-          image: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}
-          chown: ${{ env.USER_UID }}:${{ env.USER_GID }}
-          types: ${{ matrix.disk-type }}
-          additional-args: --use-librepo=True --rootfs ext4
+          arch: ${{ inputs.platform }}
+          image_name: ${{ env.IMAGE_NAME }}
+          image_repo: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+          variant: "Kinoite"                         # change per DE image
+          version: ${{ env.DEFAULT_TAG }}
+          image_tag: ${{ env.DEFAULT_TAG }}
+          iso_name: "${{ env.IMAGE_NAME }}-${{ env.DEFAULT_TAG }}-${{ inputs.platform }}.iso"
+          enable_cache_dnf: "false"
+          enable_cache_skopeo: "false"
+          flatpak_remote_refs_dir: "./installer/flatpaks/${{ inputs.platform }}" # your Flatpak list folder
+          enable_flatpak_dependencies: "false"
+          extra_boot_params: ""                      # optional kernel/boot parameters
+          additional_templates: "/github/workspace/installer/lorax_templates/remove_root_password_prompt.tmpl /github/workspace/installer/lorax_templates/set_default_user.tmpl"
+          repos: "/github/workspace/rakuos.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo"
 
       # 🔥 Rename ISO with UTC date
       - name: Rename ISO
         if: github.event_name != 'pull_request'
         run: |
           cd ${{ steps.build.outputs.output-directory }}
-
           BUILD_DATE=$(date -u +%Y.%m.%d)
           ISO_PATH=$(find . -type f -name "*.iso" | head -n 1)
           echo "Found ISO at $ISO_PATH"
-
           NEW_NAME="rakuos-kde-${BUILD_DATE}-${{ inputs.platform }}.iso"
           mv "$ISO_PATH" "$NEW_NAME"
-
           echo "NEW_ISO_NAME=$NEW_NAME" >> $GITHUB_ENV
         shell: bash
 
@@ -158,25 +163,13 @@ jobs:
           password: ${{ secrets.SFTP_PASSWORD }}
           script: |
             cd ${{ secrets.SFTP_TARGET }}
-
             NEW="${{ env.NEW_ISO_NAME }}"
             NEW_SHA="${NEW}.sha256"
-
             LATEST_LINK="rakuos-kde-latest-${{ inputs.platform }}.iso"
             LATEST_SHA_LINK="${LATEST_LINK}.sha256"
-
             OLD=$(readlink "$LATEST_LINK" || true)
             OLD_SHA=$(readlink "$LATEST_SHA_LINK" || true)
-
-            # Update symlinks atomically
             ln -sf "$NEW" "$LATEST_LINK"
             ln -sf "$NEW_SHA" "$LATEST_SHA_LINK"
-
-            # Delete old ISO + checksum if they exist and are different
-            if [ -n "$OLD" ] && [ "$OLD" != "$NEW" ]; then
-              rm -f "$OLD"
-            fi
-
-            if [ -n "$OLD_SHA" ] && [ "$OLD_SHA" != "$NEW_SHA" ]; then
-              rm -f "$OLD_SHA"
-            fi
+            if [ -n "$OLD" ] && [ "$OLD" != "$NEW" ]; then rm -f "$OLD"; fi
+            if [ -n "$OLD_SHA" ] && [ "$OLD_SHA" != "$NEW_SHA" ]; then rm -f "$OLD_SHA"; fi
