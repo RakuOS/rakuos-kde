@@ -67,7 +67,14 @@ jobs:
 
       - name: Checkout
         uses: actions/checkout@v4
-
+      
+      # Docker requires lowercase registry references
+      - name: Lowercase Registry
+        id: registry_case
+        uses: ASzc/change-string-case-action@d0603cd0a7dd490be678164909f65c7737470a7f # v6
+        with:
+          string: ${{ env.IMAGE_REGISTRY }}
+      
       # 🔥 Build ISO using build-container-installer
       - name: Build ISO
         id: build
@@ -75,7 +82,7 @@ jobs:
         with:
           arch: ${{ inputs.platform == 'amd64' && 'x86_64' || inputs.platform == 'arm64' && 'aarch64' || inputs.platform }}
           image_name: ${{ env.IMAGE_NAME }}
-          image_repo: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
+          image_repo: ${{ steps.registry_case.outputs.lowercase }}
           variant: "Kinoite"                         # change per DE image
           version: 43
           image_tag: ${{ env.DEFAULT_TAG }}
