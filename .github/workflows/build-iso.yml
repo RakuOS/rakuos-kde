@@ -73,7 +73,7 @@ jobs:
         id: build
         uses: jasonn3/build-container-installer@main
         with:
-          arch: ${{ inputs.platform }}
+          arch: ${{ inputs.platform == 'amd64' && 'x86_64' || inputs.platform == 'arm64' && 'aarch64' || inputs.platform }}
           image_name: ${{ env.IMAGE_NAME }}
           image_repo: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
           variant: "Kinoite"                         # change per DE image
