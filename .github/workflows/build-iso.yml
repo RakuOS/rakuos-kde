@@ -71,7 +71,7 @@ jobs:
       # 🔥 Build ISO using build-container-installer
       - name: Build ISO
         id: build
-        uses: jasonn3/build-container-installer@c9ef3de33236e66781ec37bd0485e8009eaefe24
+        uses: jasonn3/build-container-installer@main
         with:
           arch: ${{ inputs.platform }}
           image_name: ${{ env.IMAGE_NAME }}
