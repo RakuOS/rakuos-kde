@@ -159,7 +159,7 @@ jobs:
             build_files
             config
             disk_config
-            flatpak.OhV
+            flatpak.*
             .gitignore
             manifest-anaconda-iso.json
             bootiso
