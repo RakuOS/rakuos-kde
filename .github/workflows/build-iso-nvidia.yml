@@ -167,10 +167,12 @@ jobs:
             bootiso
             LICENSE
             README.md
+            CONTRIBUTING.md
             artifacthub-repo.yml
             cosign.pub
             *-CHECKSUM
             Containerfile
+            Containerfile.nvidia
 
       # 🔄 Update latest symlink + delete previous ISO + SHA256
       - name: Cleanup old ISO + update latest symlink
