@@ -1,4 +1,4 @@
-name: Build ISO
+name: Build Nvidia ISO
 
 on:
   workflow_dispatch:
@@ -77,7 +77,7 @@ jobs:
         uses: jasonn3/build-container-installer@main
         with:
           arch: ${{ inputs.platform == 'amd64' && 'x86_64' || inputs.platform == 'arm64' && 'aarch64' || inputs.platform }}
-          image_name: ${{ env.IMAGE_NAME }}
+          image_name: ${{ env.IMAGE_NAME }}-nvidia
           image_repo: ${{ steps.registry_case.outputs.lowercase }}
           variant: "Kinoite"                         # change per DE image
           version: 43
