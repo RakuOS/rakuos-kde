@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build:
     name: Build ISO (${{ matrix.gpu }} / ${{ inputs.platform }})
-    runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
+    runs-on: ${{ inputs.platform == 'amd64' ? 'ubuntu-24.04' : 'ubuntu-24.04-arm' }}
 
     strategy:
       fail-fast: false
@@ -106,7 +106,7 @@ jobs:
         id: build
         uses: jasonn3/build-container-installer@main
         with:
-          arch: ${{ inputs.platform == 'amd64' && 'x86_64' || 'aarch64' }}
+          arch: ${{ inputs.platform == 'amd64' ? 'x86_64' : 'aarch64' }}
           image_name: ${{ env.BUILD_IMAGE_NAME }}
           image_repo: ${{ steps.registry_case.outputs.lowercase }}
           variant: Kinoite
