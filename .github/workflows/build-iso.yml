@@ -169,6 +169,7 @@ jobs:
             installer
             system_files
             .gitignore
+            rakuos.repo
             manifest-anaconda-iso.json
             bootiso
             LICENSE
