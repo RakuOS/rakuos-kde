@@ -10,7 +10,8 @@ on:
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
-
+  repository_dispatch:
+    types: [trigger-build]
 env:
   IMAGE_DESC: "RakuOS KDE"
   IMAGE_KEYWORDS: "bootc,fedora,atomic"
