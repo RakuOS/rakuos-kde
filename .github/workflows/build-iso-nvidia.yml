@@ -95,7 +95,7 @@ jobs:
           enable_flatpak_dependencies: "true"
           extra_boot_params: ""                      # optional kernel/boot parameters
           additional_templates: "/github/workspace/installer/lorax_templates/remove_spokes.tmpl"
-          repos: 'rakuos.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
+          repos: '/github/workspace/rakuos.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
           web_ui: "false"
 
       # 🔥 Rename ISO with UTC date
