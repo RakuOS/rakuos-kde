@@ -71,6 +71,12 @@ jobs:
         with:
           string: ${{ env.IMAGE_REGISTRY }}
       
+      - name: Setup RakuOS Repo
+        id: setup-rakuos-repo
+        shell: bash
+        run: |
+          curl -Lo ${{ github.workspace }}/rakuos.repo https://download.opensuse.org/repositories/home:/tohur:/rakuos/Fedora_43/home:tohur:rakuos.repo
+
       # 🔥 Build ISO using build-container-installer
       - name: Build ISO
         id: build
@@ -89,7 +95,7 @@ jobs:
           enable_flatpak_dependencies: "true"
           extra_boot_params: ""                      # optional kernel/boot parameters
           additional_templates: "/github/workspace/installer/lorax_templates/remove_spokes.tmpl"
-          repos: '/etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
+          repos: 'rakuos.repo /etc/yum.repos.d/fedora.repo /etc/yum.repos.d/fedora-updates.repo'
           web_ui: "false"
 
       # 🔥 Rename ISO with UTC date
