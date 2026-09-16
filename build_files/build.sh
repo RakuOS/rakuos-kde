@@ -86,7 +86,7 @@ rm -rf /usr/share/plasma/look-and-feel/org.fedoraproject.fedoralight.desktop
 
 ## Remove Fedora Wallpapers
 rm /usr/share/wallpapers/Fedora
-rm -rf /usr/share/wallpapers/F44
+rm -rf /usr/share/wallpapers/F${FEDORA_VERSION}
 
 #KDE customizations
 rm /usr/share/applications/org.kde.foreground-booster.desktop
