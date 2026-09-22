@@ -65,6 +65,7 @@ rum install -y akonadi-server \
   qt6-qtimageformats \
   ${RAKUOS_RELEASE_PKG} \
   rakuos-software-qt \
+  rakuos-system-qt \
   rakuos-welcome-qt \
   samba-usershares \
   scx-manager \
