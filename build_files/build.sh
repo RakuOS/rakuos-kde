@@ -68,7 +68,6 @@ rum install -y akonadi-server \
   rakuos-system-qt \
   rakuos-welcome-qt \
   samba-usershares \
-  scx-manager \
   signon-kwallet-extension \
   spectacle \
   systemd-oomd-defaults \
