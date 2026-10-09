@@ -70,6 +70,7 @@ rum install -y akonadi-server \
   samba-usershares \
   signon-kwallet-extension \
   spectacle \
+  system-config-printer \
   systemd-oomd-defaults \
   udisks2
 
