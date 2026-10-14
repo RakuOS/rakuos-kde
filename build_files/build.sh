@@ -20,7 +20,7 @@ rum config-manager --default --set-enabled terra
 rum config-manager --default --set-enabled $(cat /usr/share/rakuos/rpmfusion-default-repos)
 
 ## Install packages
-rum install -y akonadi-server \
+rum install -y --skip-broken --skip-unavailable akonadi-server \
   akonadi-server-mysql \
   ark \
   bluedevil \
