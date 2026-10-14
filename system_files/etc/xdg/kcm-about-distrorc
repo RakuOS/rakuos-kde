@@ -4,5 +4,5 @@ Name=RakuOS Linux
 Version=45
 Variant=KDE Plasma Atomic Desktop
 Website=https://rakuos.org
-BugReportUrl=https://gitlab.com/RakuOS
+BugReportUrl=https://rakuos.org/bugs/p/rakuos-images-rakuos-kde
 SupportUrl=https://rakuos.org/forum
