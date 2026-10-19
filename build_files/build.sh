@@ -20,7 +20,12 @@ rum config-manager --default --set-enabled terra
 rum config-manager --default --set-enabled $(cat /usr/share/rakuos/rpmfusion-default-repos)
 
 ## Install packages
-rum install -y --skip-broken --skip-unavailable akonadi-server \
+# oo7 (from the base image) is the Secret Service. KWallet itself stays
+# (Plasma needs kf6-kwallet): kwalletd6 forwards KWallet API calls to the
+# Secret Service, so KDE apps' secrets land in oo7. Without pam-kwallet,
+# KDE's own provider (ksecretd) isn't started at login and can't take the
+# org.freedesktop.secrets name from oo7.
+rum install -y --exclude=pam-kwallet --exclude=kwalletmanager5 --skip-broken --skip-unavailable akonadi-server \
   akonadi-server-mysql \
   ark \
   bluedevil \
@@ -51,11 +56,9 @@ rum install -y --skip-broken --skip-unavailable akonadi-server \
   konsole \
   kscreen \
   ksshaskpass \
-  kwalletmanager5 \
   kwin \
   libappindicator-gtk3 \
   okular \
-  pam-kwallet \
   plasma-browser-integration \
   plasma-desktop \
   plasma-foreground-booster-dmemcg \
