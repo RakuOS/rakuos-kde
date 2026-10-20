@@ -1,0 +1,12 @@
+# RakuOS: KWallet on top of oo7, the Secret Service every RakuOS desktop uses.
+# By default kwalletd6 sends KWallet API calls to KWallet's own ksecretd
+# (org.kde.secretservicecompat), which keeps secrets in ~/.local/share/kwalletd.
+# With KSecretD disabled it uses org.freedesktop.secrets (oo7) instead, and
+# MigrateTo3rdParty makes it copy each existing .kwl wallet into oo7 once
+# (recorded in the user's kwalletrc as WalletsMigratedToSecretService).
+# These are defaults; a user's ~/.config/kwalletrc overrides them.
+[KSecretD]
+Enabled=false
+
+[Migration]
+MigrateTo3rdParty=true
