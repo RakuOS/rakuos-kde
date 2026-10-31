@@ -11,6 +11,13 @@ if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
     RAKUOS_RELEASE_PKG="rakuos-release-kde-staging"
 fi
 
+# Same for RakuOS System: staging images install its -staging build (from
+# rakuos-system's staging branch), which provides the stable name.
+RAKUOS_SYSTEM_PKG="rakuos-system-qt"
+if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
+    RAKUOS_SYSTEM_PKG="rakuos-system-staging-qt"
+fi
+
 # Terra ships disabled by default (third-party repos are opt-in), so enable
 # it here in case any packages below come from Terra; post-build.sh disables
 # it again before the image is finalized.
@@ -71,7 +78,7 @@ rum install -y --exclude=pam-kwallet --exclude=kwalletmanager5 --skip-broken --s
   qt6-qtimageformats \
   ${RAKUOS_RELEASE_PKG} \
   rakuos-software-qt \
-  rakuos-system-qt \
+  ${RAKUOS_SYSTEM_PKG} \
   rakuos-welcome-qt \
   samba-usershares \
   signon-kwallet-extension \
