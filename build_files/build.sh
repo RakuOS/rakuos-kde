@@ -18,6 +18,14 @@ if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
     RAKUOS_SYSTEM_PKG="rakuos-system-staging-qt"
 fi
 
+# And for the Software Center and the Welcome app.
+RAKUOS_SOFTWARE_PKG="rakuos-software-qt"
+RAKUOS_WELCOME_PKG="rakuos-welcome-qt"
+if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
+    RAKUOS_SOFTWARE_PKG="rakuos-software-staging-qt"
+    RAKUOS_WELCOME_PKG="rakuos-welcome-staging-qt"
+fi
+
 # Terra ships disabled by default (third-party repos are opt-in), so enable
 # it here in case any packages below come from Terra; post-build.sh disables
 # it again before the image is finalized.
@@ -77,9 +85,9 @@ rum install -y --exclude=pam-kwallet --exclude=kwalletmanager5 --skip-broken --s
   plasma-workspace-wayland \
   qt6-qtimageformats \
   ${RAKUOS_RELEASE_PKG} \
-  rakuos-software-qt \
+  ${RAKUOS_SOFTWARE_PKG} \
   ${RAKUOS_SYSTEM_PKG} \
-  rakuos-welcome-qt \
+  ${RAKUOS_WELCOME_PKG} \
   samba-usershares \
   signon-kwallet-extension \
   spectacle \
