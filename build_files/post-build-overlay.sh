@@ -144,8 +144,6 @@ cat >> /usr/share/rakuos/protected-packages.txt << 'EOF'
   bluez-cups
   kde-gtk-config
   kcm_systemd
-  kwalletmanager5
-  pam-kwallet
   signon-kwallet-extension
   systemd-oomd-defaults
   samba-usershares

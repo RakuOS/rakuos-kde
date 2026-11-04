@@ -11,6 +11,21 @@ if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
     RAKUOS_RELEASE_PKG="rakuos-release-kde-staging"
 fi
 
+# Same for RakuOS System: staging images install its -staging build (from
+# rakuos-system's staging branch), which provides the stable name.
+RAKUOS_SYSTEM_PKG="rakuos-system-qt"
+if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
+    RAKUOS_SYSTEM_PKG="rakuos-system-staging-qt"
+fi
+
+# And for the Software Center and the Welcome app.
+RAKUOS_SOFTWARE_PKG="rakuos-software-qt"
+RAKUOS_WELCOME_PKG="rakuos-welcome-qt"
+if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
+    RAKUOS_SOFTWARE_PKG="rakuos-software-staging-qt"
+    RAKUOS_WELCOME_PKG="rakuos-welcome-staging-qt"
+fi
+
 # Terra ships disabled by default (third-party repos are opt-in), so enable
 # it here in case any packages below come from Terra; post-build.sh disables
 # it again before the image is finalized.
@@ -20,7 +35,12 @@ rum config-manager --default --set-enabled terra
 rum config-manager --default --set-enabled $(cat /usr/share/rakuos/rpmfusion-default-repos)
 
 ## Install packages
-rum install -y --skip-broken --skip-unavailable akonadi-server \
+# oo7 (from the base image) is the Secret Service. KWallet itself stays
+# (Plasma needs kf6-kwallet): kwalletd6 forwards KWallet API calls to the
+# Secret Service, so KDE apps' secrets land in oo7. Without pam-kwallet,
+# KDE's own provider (ksecretd) isn't started at login and can't take the
+# org.freedesktop.secrets name from oo7.
+rum install -y --exclude=pam-kwallet --exclude=kwalletmanager5 --skip-broken --skip-unavailable akonadi-server \
   akonadi-server-mysql \
   ark \
   bluedevil \
@@ -51,11 +71,9 @@ rum install -y --skip-broken --skip-unavailable akonadi-server \
   konsole \
   kscreen \
   ksshaskpass \
-  kwalletmanager5 \
   kwin \
   libappindicator-gtk3 \
   okular \
-  pam-kwallet \
   plasma-browser-integration \
   plasma-desktop \
   plasma-foreground-booster-dmemcg \
@@ -67,9 +85,9 @@ rum install -y --skip-broken --skip-unavailable akonadi-server \
   plasma-workspace-wayland \
   qt6-qtimageformats \
   ${RAKUOS_RELEASE_PKG} \
-  rakuos-software-qt \
-  rakuos-system-qt \
-  rakuos-welcome-qt \
+  ${RAKUOS_SOFTWARE_PKG} \
+  ${RAKUOS_SYSTEM_PKG} \
+  ${RAKUOS_WELCOME_PKG} \
   samba-usershares \
   signon-kwallet-extension \
   spectacle \
