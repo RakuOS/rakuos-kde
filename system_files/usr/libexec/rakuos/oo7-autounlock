@@ -65,8 +65,10 @@ tell() {
 
 changed=0
 
-# The KWallet data oo7 can't import: KWallet already moved it.
-if [ -d "$HOME/.local/share/kwalletd" ] &&
+# The KWallet data oo7 can't import: KWallet already moved it. Only when
+# there are wallet files: kwalletd6 recreates an empty kwalletd directory
+# whenever it starts, and that one is harmless.
+if compgen -G "$HOME/.local/share/kwalletd/*.kwl" >/dev/null &&
    grep -q '^WalletsMigratedToSecretService=' "$HOME/.config/kwalletrc" 2>/dev/null; then
     backup="$HOME/.local/share/kwalletd.migrated-$(date +%Y%m%d)"
     if mv "$HOME/.local/share/kwalletd" "$backup"; then
