@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Keyring automatic unlock
+Comment=Unlocks the oo7 login keyring, also with automatic login
+Exec=/usr/libexec/rakuos/oo7-autounlock
+OnlyShowIn=KDE;
+NoDisplay=true
+X-KDE-autostart-phase=1

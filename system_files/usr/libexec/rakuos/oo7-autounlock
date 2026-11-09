@@ -1,0 +1,108 @@
+#!/usr/bin/bash
+# oo7-autounlock — keep the oo7 login keyring unlocked on Plasma, also with
+# automatic login (the Gamescope image always logs in automatically).
+#
+# pam_oo7 unlocks the "login" keyring with the password typed at the login
+# screen. With automatic login nobody types one, so the keyring stays
+# locked, and everything that needs a secret waits for an unlock prompt:
+# kwalletd6 hangs, and the Electron apps that talk to it (Discord, VS Code,
+# …) time out. oo7-daemon.service has ImportCredential=
+# oo7.keyring-encryption-password: with that credential in the user's
+# credstore (~/.local/lib/credstore.encrypted/, encrypted for this user with
+# systemd-creds --user) oo7 unlocks the keyring itself whenever it starts.
+#
+# Runs from XDG autostart in Plasma. When the login keyring is locked it
+# asks for the password once, stores it as that credential, restarts oo7
+# and checks the keyring unlocked; a wrong password is removed again. A
+# stale credential (the password changed) is handled the same way. After a
+# normal password login the keyring is unlocked already and this does
+# nothing.
+#
+# It also moves ~/.local/share/kwalletd aside once KWallet has copied its
+# wallets into the Secret Service (kwalletrc's WalletsMigratedToSecretService):
+# oo7 can't read some .kwl files and turns them into a locked "kdewallet"
+# placeholder collection on every start, which kwalletd6 then waits on.
+set -uo pipefail
+
+CRED_DIR="$HOME/.local/lib/credstore.encrypted"
+CRED="$CRED_DIR/oo7.keyring-encryption-password"
+NAME=oo7.keyring-encryption-password
+LOGIN=/org/freedesktop/secrets/collection/login
+log() { logger -t rakuos-oo7-autounlock -- "$*"; }
+
+login_locked() {
+    local v
+    v=$(busctl --user get-property org.freedesktop.secrets "$LOGIN" \
+        org.freedesktop.Secret.Collection Locked 2>/dev/null) || return 1
+    [ "$v" = "b true" ]
+}
+
+restart_oo7() {
+    systemctl --user restart oo7-daemon.service
+    # Clients stuck on an unlock request (kwalletd6) start over.
+    pkill -u "$(id -u)" -x kwalletd6 2>/dev/null || true
+    sleep 1
+}
+
+ask_password() {
+    local text="$1"
+    if command -v kdialog >/dev/null; then
+        kdialog --title "Unlock your keyring" --password "$text"
+    elif command -v zenity >/dev/null; then
+        zenity --password --title="Unlock your keyring" --text="$text" 2>/dev/null
+    else
+        return 1
+    fi
+}
+
+tell() {
+    if command -v kdialog >/dev/null; then
+        kdialog --title "Unlock your keyring" --sorry "$1"
+    elif command -v zenity >/dev/null; then
+        zenity --warning --title="Unlock your keyring" --text="$1" 2>/dev/null
+    fi
+}
+
+changed=0
+
+# The KWallet data oo7 can't import: KWallet already moved it.
+if [ -d "$HOME/.local/share/kwalletd" ] &&
+   grep -q '^WalletsMigratedToSecretService=' "$HOME/.config/kwalletrc" 2>/dev/null; then
+    backup="$HOME/.local/share/kwalletd.migrated-$(date +%Y%m%d)"
+    if mv "$HOME/.local/share/kwalletd" "$backup"; then
+        log "moved ~/.local/share/kwalletd to $backup (already migrated to the Secret Service)"
+        changed=1
+    fi
+fi
+[ "$changed" = 1 ] && restart_oo7
+
+# Starts oo7 if it isn't running yet (D-Bus activation).
+busctl --user status org.freedesktop.secrets >/dev/null 2>&1 || sleep 2
+login_locked || exit 0
+
+text="Enter your password to unlock your keyring.
+
+RakuOS stores it encrypted for your account, so the keyring unlocks on its own from now on, also when you're logged in automatically."
+for attempt in 1 2 3; do
+    password=$(ask_password "$text") || { log "unlock dialog cancelled"; exit 0; }
+    [ -n "$password" ] || continue
+    mkdir -p "$CRED_DIR" && chmod 700 "$CRED_DIR"
+    if ! printf '%s' "$password" | systemd-creds encrypt --user --name="$NAME" - "$CRED"; then
+        log "systemd-creds encrypt failed"
+        tell "Couldn't store the password (systemd-creds failed). The keyring stays locked."
+        exit 1
+    fi
+    unset password
+    chmod 600 "$CRED"
+    restart_oo7
+    if ! login_locked; then
+        log "login keyring unlocked; stored the credential for automatic unlocking"
+        exit 0
+    fi
+    rm -f "$CRED"
+    log "wrong keyring password (attempt $attempt)"
+    restart_oo7
+    text="That password didn't unlock the keyring. Enter the password you log in with (the one you used when the keyring was created)."
+done
+tell "The keyring is still locked. Apps may ask for its password until it's unlocked."
+exit 0

@@ -62,6 +62,7 @@ rum install -y --exclude=pam-kwallet --exclude=kwalletmanager5 --skip-broken --s
   kde-gtk-config \
   kde-partitionmanager \
   kdegraphics-thumbnailers \
+  kdialog \
   kdotool \
   kf6-kimageformats \
   kinfocenter \
