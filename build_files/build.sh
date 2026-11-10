@@ -52,7 +52,7 @@ rum install -y --exclude=pam-kwallet --exclude=kwalletmanager5 --skip-broken --s
   dolphin \
   flatpak-kcm \
   fprintd-pam \
-  gwenview \
+  koko \
   icoutils \
   kaccounts-integration-qt6 \
   kaccounts-providers \

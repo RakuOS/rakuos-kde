@@ -152,7 +152,7 @@ cat >> /usr/share/rakuos/protected-packages.txt << 'EOF'
   rakuos-welcome-qt
   ark
   dolphin
-  gwenview
+  koko
   okular
   kate
   kde-partitionmanager
