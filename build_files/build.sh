@@ -13,17 +13,17 @@ fi
 
 # Same for RakuOS System: staging images install its -staging build (from
 # rakuos-system's staging branch), which provides the stable name.
-RAKUOS_SYSTEM_PKG="rakuos-system-qt"
+RAKUOS_SYSTEM_PKG="rakuos-system-kirigami"
 if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
-    RAKUOS_SYSTEM_PKG="rakuos-system-staging-qt"
+    RAKUOS_SYSTEM_PKG="rakuos-system-staging-kirigami"
 fi
 
 # And for the Software Center and the Welcome app.
-RAKUOS_SOFTWARE_PKG="rakuos-software-qt"
-RAKUOS_WELCOME_PKG="rakuos-welcome-qt"
+RAKUOS_SOFTWARE_PKG="rakuos-software-kirigami"
+RAKUOS_WELCOME_PKG="rakuos-welcome-kirigami"
 if [ "${RAKUOS_STAGING:-0}" = "1" ]; then
-    RAKUOS_SOFTWARE_PKG="rakuos-software-staging-qt"
-    RAKUOS_WELCOME_PKG="rakuos-welcome-staging-qt"
+    RAKUOS_SOFTWARE_PKG="rakuos-software-staging-kirigami"
+    RAKUOS_WELCOME_PKG="rakuos-welcome-staging-kirigami"
 fi
 
 # Terra ships disabled by default (third-party repos are opt-in), so enable
